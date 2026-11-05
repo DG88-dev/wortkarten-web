@@ -77,7 +77,7 @@ function renderCard(){
     const front=settings.direction==='hu'?w.hungarian:w.german,back=settings.direction==='hu'?w.german:w.hungarian;
     content.append(E('h1','',flipped?back:front));
     if(flipped){content.append(E('p','meaning',front));if(w.example)content.append(E('p','example',w.example));if(w.forms)content.append(E('p','forms',w.forms.replaceAll(' | ','\n')));}
-    content.setAttribute('role','button');content.tabIndex=0;content.setAttribute('aria-label','Szókártya megfordítása');content.onclick=flip;
+    content.setAttribute('role','button');content.tabIndex=0;content.setAttribute('aria-label','Szókártya megfordítása');
     content.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();flip();}};
   }
   $('article-answers').hidden=mode!=='article';$('shuffle').hidden=mode!=='article';$('normal-controls').hidden=mode==='article';$('previous').disabled=index===0;
@@ -86,10 +86,27 @@ function renderCard(){
 }
 function flip(){if(!practicing||finished||mode==='article')return;flipped=!flipped;renderCard();}
 function finish(){finished=true;showScreen();$('finish-detail').textContent=deck.length+' szó';$('restart').focus();}
+function previous(){if(index>0){index--;flipped=false;renderCard();}}
 function next(){if(index+1>=deck.length)finish();else{index++;flipped=false;renderCard();}}
 function shuffleAgain(){deck=C.reshuffle(deck);index=0;finished=false;feedback='';showScreen();renderCard();}
 function answer(value){if(!practicing||finished||mode!=='article')return;const result=C.answerArticle(deck,index,value);index=result.index;feedback=result.feedback;if(result.finished)finish();else renderCard();}
-$('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=()=>{if(index>0){index--;flipped=false;renderCard();}};$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>mode==='article'?shuffleAgain():start();
+$('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=previous;$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>mode==='article'?shuffleAgain():start();
+
+// Three equal vertical tap zones, including the card's empty space.
+// Interactive controls and text selection keep their own behavior.
+$('card').onclick=e=>{
+  if(!practicing||finished||mode!=='normal')return;
+  if(e.target.closest('button,a,input,select,textarea'))return;
+  if(window.getSelection()?.toString())return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const position=(e.clientX-rect.left)/rect.width;
+  // Keyboard/assistive-technology activation of the content means flip.
+  if(e.detail===0){flip();return;}
+  if(position<1/3)previous();
+  else if(position<2/3)flip();
+  else next();
+};
+
 document.querySelectorAll('[data-article]').forEach(b=>b.onclick=()=>answer(b.dataset.article));
 document.querySelectorAll('[data-direction]').forEach(b=>b.onclick=()=>{settings.direction=b.dataset.direction;refresh();});
 for(const lang of ['de','en'])$('lang-'+lang).onclick=()=>{persist();language=lang;settings={...C.defaults(),...settingsByLanguage[lang]};query='';$('search').value='';refresh();};
