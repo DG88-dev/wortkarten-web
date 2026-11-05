@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/marks/{wordId} {
+      function owner() { return request.auth != null && request.auth.uid == userId; }
+      function valid() {
+        let data = request.resource.data;
+        return wordId.matches('csv:(de|en):[^/]+')
+          && data.keys().hasOnly(['favorite', 'hidden', 'updatedAt'])
+          && data.keys().hasAll(['updatedAt'])
+          && (!('favorite' in data) || data.favorite is bool)
+          && (!('hidden' in data) || data.hidden is bool)
+          && ('favorite' in data || 'hidden' in data)
+          && data.updatedAt == request.time;
+      }
+      allow read: if owner();
+      allow create, update: if owner() && valid();
+      allow delete: if owner();
+    }
+  }
+}
