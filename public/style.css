@@ -34,3 +34,29 @@
 }
 
 @media(max-width:760px){.header .brand{min-width:0}.header .brand>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header .brand img{flex-shrink:0}}
+
+/* v4: bounded grid tracks keep long conjugations inside the scroll region. */
+#practice{display:grid;grid-template-columns:minmax(0,980px);grid-template-rows:auto minmax(0,1fr) auto;justify-content:center;align-items:stretch;overflow:hidden}
+.practice-nav{grid-row:1}
+#card{grid-row:2;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto;min-height:0;height:100%;max-height:610px;align-self:center;overflow:hidden}
+.card-top{grid-row:1}
+#card-content{grid-row:2;min-width:0;min-height:0;height:100%;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+#article-answers{grid-row:3}
+#feedback{grid-row:4;max-height:90px;overflow:auto}
+.card-footer{grid-row:5;margin-top:0;background:var(--panel);padding-top:12px}
+#card-marks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+#card-marks button{min-width:0;min-height:40px}
+#normal-controls{grid-row:3}
+#account .account-icon{width:18px;height:18px;line-height:0}
+#account .account-icon svg{width:18px;height:18px;max-width:18px;max-height:18px}
+@media(max-width:760px){
+  .header #account{width:36px;height:36px;min-width:36px;max-width:36px;padding:8px;flex:0 0 36px}
+  #card-content{padding:16px 0 12px}
+  #card-content .example{margin-top:16px}
+  #card-content .forms{margin-top:12px;line-height:1.4}
+  .card-footer{padding-top:8px}
+}
+@media(display-mode:standalone) and (min-width:761px) and (pointer:coarse){
+  /* Reserve blank space for the iPadOS system-owned top-edge effect. */
+  #app{padding-top:calc(env(safe-area-inset-top,0px) + 24px)}
+}
