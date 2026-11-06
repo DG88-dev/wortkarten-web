@@ -129,8 +129,8 @@ function renderAccount(user){
     account.replaceChildren();
     const accountIcon=E('span','account-icon');accountIcon.setAttribute('aria-hidden','true');
     accountIcon.innerHTML=user
-      ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M9 12h12m-4-4 4 4-4 4"/></svg>'
-      :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>';
+      ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M9 12h12m-4-4 4 4-4 4"/></svg>'
+      :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>';
     account.append(accountIcon,E('span','account-label',label));
     account.setAttribute('aria-label',user?label+': '+user.email:'Bejelentkezés Google-fiókkal');
     account.title=user?label+': '+user.email:'Bejelentkezés Google-fiókkal';
