@@ -2,7 +2,7 @@ import * as C from './core.js';
 import {MarkStore} from './sync.js';
 const $=id=>document.getElementById(id);
 const E=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
-const names={priorities:'Szint',parts:'Szófaj',topics:'Témakör',examTopics:'Nyelvvizsga-témakör',categories:'Kategória'};
+const names={priorities:'Szint',parts:'Szófaj',topics:'Témakör',examTopics:'Vizsgatémakör',categories:'Kategória'};
 const icon=(kind,active)=> kind==='favorite'
  ?`<svg viewBox="0 0 24 24" aria-hidden="true" fill="${active?'currentColor':'none'}" stroke="currentColor" stroke-width="1.7"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></svg>`
  :`<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>${active?'<path d="m3 3 18 18"/>':''}</svg>`;
@@ -124,6 +124,18 @@ document.addEventListener('keydown',e=>{
   else if(mode==='article'&&['1','2','3'].includes(key)){e.preventDefault();answer(['der','die','das'][Number(key)-1]);}
   else if(mode==='normal'){if(key===' '){e.preventDefault();flip();}if(key==='arrowright'){e.preventDefault();next();}if(key==='arrowleft'&&index>0){e.preventDefault();index--;flipped=false;renderCard();}}
 });
+function renderAccount(user){
+    const account=$('account'),label=user?'Kijelentkezés':'Bejelentkezés';
+    account.replaceChildren();
+    const accountIcon=E('span','account-icon');accountIcon.setAttribute('aria-hidden','true');
+    accountIcon.innerHTML=user
+      ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M9 12h12m-4-4 4 4-4 4"/></svg>'
+      :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>';
+    account.append(accountIcon,E('span','account-label',label));
+    account.setAttribute('aria-label',user?label+': '+user.email:'Bejelentkezés Google-fiókkal');
+    account.title=user?label+': '+user.email:'Bejelentkezés Google-fiókkal';
+}
+renderAccount(null);
 $('account').onclick=async()=>{try{if(store.user)await store.logout();else await store.login();}catch(e){notice(store.errorText(e));}};
 $('retry').onclick=async()=>{try{await store.retry();}catch(e){notice(store.errorText(e));}};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify(marks,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=E('a');a.href=url;a.download='Wortkarten_jelolesek.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
@@ -132,7 +144,8 @@ async function load(){try{
   const results=await Promise.all(['de','en'].map(async lang=>{const response=await fetch('./data/'+lang+'.json');if(!response.ok)throw Error('A szókészlet nem tölthető be.');return [lang,await response.json()];}));
   data=Object.fromEntries(results);ready=true;
   store=new MarkStore(value=>{marks=value;scheduleRefresh();},value=>{$('sync-status').textContent=value;},user=>{
-    if(practicing)back();$('account').textContent=user?'Kijelentkezés':'Bejelentkezés';$('account').title=user?.email??'Bejelentkezés Google-fiókkal';
+    if(practicing)back();
+    renderAccount(user);
     if(user)notice('Bejelentkezve: '+user.email+'. A helyi jelöléseket exportálással és importálással viheted át a fiókodba.');
   },notice);
   refresh();store.connect().catch(()=>{});
