@@ -68,6 +68,7 @@ function start(nextMode='normal'){
 function back(){practicing=false;finished=false;deck=[];feedback='';showScreen();refresh();}
 function renderCard(){
   const w=deck[index];if(!w)return;
+  $('card').classList.toggle('is-flipped',mode==='normal'&&flipped);
   $('practice-title').textContent=mode==='article'?'Der, Die, Das':'Szókártyák';$('card-level').textContent=w.priority+' · '+w.part;$('progress').textContent=(index+1)+'/'+deck.length;
   const content=$('card-content');content.replaceChildren();
   content.removeAttribute('role');content.removeAttribute('tabindex');content.removeAttribute('aria-label');content.onclick=null;content.onkeydown=null;
@@ -124,6 +125,8 @@ document.addEventListener('keydown',e=>{
   else if(mode==='article'&&['1','2','3'].includes(key)){e.preventDefault();answer(['der','die','das'][Number(key)-1]);}
   else if(mode==='normal'){if(key===' '){e.preventDefault();flip();}if(key==='arrowright'){e.preventDefault();next();}if(key==='arrowleft'&&index>0){e.preventDefault();index--;flipped=false;renderCard();}}
 });
+const compactAccount=matchMedia('(max-width:760px), (pointer:coarse) and (max-height:500px)');
+compactAccount.addEventListener('change',()=>renderAccount(store?.user??null));
 function renderAccount(user){
     const account=$('account'),label=user?'Kijelentkezés':'Bejelentkezés';
     account.replaceChildren();
@@ -131,7 +134,9 @@ function renderAccount(user){
     accountIcon.innerHTML=user
       ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M9 12h12m-4-4 4 4-4 4"/></svg>'
       :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>';
-    account.append(accountIcon,E('span','account-label',label));
+    const accountLabel=E('span','account-label',label);
+    accountLabel.hidden=compactAccount.matches;accountIcon.hidden=!compactAccount.matches;
+    account.append(accountIcon,accountLabel);
     account.setAttribute('aria-label',user?label+': '+user.email:'Bejelentkezés Google-fiókkal');
     account.title=user?label+': '+user.email:'Bejelentkezés Google-fiókkal';
 }
