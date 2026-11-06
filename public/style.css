@@ -4,3 +4,33 @@
 @media(max-width:1050px){#setup{grid-template-columns:225px minmax(0,1fr)}main{padding:20px 18px}.start-buttons button{width:160px;font-size:12px}.word-row{grid-template-columns:96px minmax(0,1.2fr) minmax(0,1.3fr) 60px 28px;gap:9px;padding:8px 10px}.topic-cell{display:none}.header{padding:12px 18px}.start-row{gap:8px}.word-count input{width:61px}.word-count button{padding:6px}.header-actions{gap:8px}}
 @media(max-width:760px){.header{min-height:65px;padding:10px 14px;gap:8px}.brand{font-size:17px;gap:8px}.brand img{width:32px;height:32px}.brand small{display:none}.header-actions{gap:3px}.segments button{padding:6px 9px}.header #account{font-size:11px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:8px}.menu summary{padding:7px}#setup{display:flex;flex-direction:column;overflow:auto;scrollbar-width:none}aside{flex:none;border-right:0;border-bottom:1px solid var(--line);padding:13px 15px;display:block;overflow:visible}.eyebrow,.sidebar-footer #loaded,.sidebar-footer #mark-counts{display:none}#filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.filter .selected-label{max-width:calc(40vw - 25px)}.filter summary{padding:7px 10px}.rank-control{margin-top:14px}.rank-control .field-title{float:left;margin:0}.rank-values{margin-left:135px}.dual-range{margin-top:4px}.check{display:inline-flex;margin-right:15px}.text-button{margin-top:5px}.sidebar-footer{border:0;padding-top:8px;margin:0}main{flex:1;min-height:350px;padding:14px 15px}.match-count{margin-bottom:12px}.match-count strong{font-size:29px}.match-count span{font-size:11px}.field-title{font-size:11px;margin-bottom:7px}.start-row{flex-wrap:wrap;margin:13px 0}.word-count label{font-size:11px}.start-buttons{flex:1;justify-content:flex-end;flex-wrap:wrap}.start-buttons button{width:auto;min-width:130px;flex:1;max-width:190px;font-size:11px}.word-list{min-height:180px}.word-row{grid-template-columns:88px minmax(0,1fr) minmax(0,1fr) 28px;font-size:12px;gap:7px;padding:7px}.part-cell{display:none}.mark-cell{gap:1px}.rank{width:28px}#practice{padding:14px;gap:13px}#card{padding:16px;min-height:260px}#card-content{padding:22px 0 15px}#card-content h1{font-size:31px}.meaning,.example{font-size:17px}.forms{font-size:13px}#card-marks button{min-width:0;padding:10px;font-size:11px}.card-footer{flex-wrap:wrap}#shuffle{margin-left:auto;font-size:11px}#normal-controls{gap:6px}#normal-controls button{min-width:0;flex:1;padding:10px;font-size:12px}#feedback{font-size:27px}#notice{font-size:11px;padding:8px 14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+/* Keep the app header and card actions outside shrinking/scrolling content. */
+.header{flex-shrink:0}
+.account-icon{display:none}
+.account-icon svg{display:block;width:20px;height:20px}
+#card{overflow:hidden}
+.card-top,.card-footer,#article-answers,#feedback{flex-shrink:0}
+#card-content{flex:1;min-height:0;overflow:auto;scrollbar-width:none;overflow-wrap:anywhere}
+#card-content::-webkit-scrollbar{display:none}
+.card-footer{min-width:0}
+#card-marks{min-width:0;flex-wrap:wrap}
+#card-marks button{max-width:100%;white-space:normal}
+#card-marks svg{flex-shrink:0}
+@media(max-width:760px){
+  .header-actions{flex-shrink:0}
+  .header #account{width:44px;height:44px;min-width:44px;max-width:44px;padding:11px;display:grid;place-items:center}
+  #account .account-label{display:none}
+  #account .account-icon{display:block}
+  #card-marks{flex:1}
+  #card-marks button{flex:1}
+}
+@media(display-mode:standalone){
+  html,body{background:#152127}
+  #app{background:var(--bg)}
+  #app::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#152127;z-index:30;pointer-events:none}
+  .header{background:#152127;backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+
+@media(max-width:760px){.header .brand{min-width:0}.header .brand>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header .brand img{flex-shrink:0}}
