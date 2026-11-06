@@ -1,4 +1,4 @@
-const CACHE='wortkarten-web-v2';
+const CACHE='wortkarten-web-v3';
 const FILES=['./','./index.html','./app.js','./core.js','./sync.js','./sync-state.js','./config.js','./style.css','./icon.png','./manifest.webmanifest','./data/de.json','./data/en.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('wortkarten-web-')&&k!==CACHE).map(k=>caches.delete(k))))));
