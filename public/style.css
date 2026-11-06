@@ -73,3 +73,15 @@
   #account .account-icon:not([hidden]){display:block}
   .header #account{display:grid;place-items:center;width:36px;min-width:36px;max-width:36px;height:36px;padding:8px;overflow:hidden}
 }
+
+/* Align filter actions and show personal mark totals on the phone layout. */
+.filter-actions{display:contents}
+@media(max-width:760px){
+  .filter-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+  .filter-actions .check{display:flex;align-items:center;margin:0;min-width:0;line-height:1.3}
+  .filter-actions .check input{flex-shrink:0}
+  .filter-actions #clear{margin:0;padding:0;flex-shrink:0;line-height:1.3;white-space:nowrap}
+  .sidebar-footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:8px;padding-top:10px}
+  .sidebar-footer #mark-counts{display:block;min-width:0;font-size:10px;line-height:1.4;text-align:left}
+  .sidebar-footer #sync-status{min-width:0;font-size:10px;line-height:1.4;text-align:right}
+}
