@@ -60,3 +60,16 @@
   /* Reserve blank space for the iPadOS system-owned top-edge effect. */
   #app{padding-top:calc(env(safe-area-inset-top,0px) + 24px)}
 }
+
+/* Compact reverse side: prioritise the translation over supplementary text. */
+#card.is-flipped #card-content{padding-top:10px;padding-bottom:8px}
+#card.is-flipped #card-content h1{font-size:clamp(36px,4vw,48px);line-height:1.08;margin:0 0 6px}
+#card.is-flipped #card-content .meaning{font-size:20px;line-height:1.2;margin:0}
+#card.is-flipped #card-content .example{font-size:16px;line-height:1.25;margin:10px auto 0}
+#card.is-flipped #card-content .forms{font-size:13px;line-height:1.2;margin:8px auto 0}
+.app-version{display:block;padding:8px 15px 4px;color:var(--muted);font-size:11px}
+@media(max-width:760px),(pointer:coarse) and (max-height:500px){
+  #account .account-label{display:none!important}
+  #account .account-icon:not([hidden]){display:block}
+  .header #account{display:grid;place-items:center;width:36px;min-width:36px;max-width:36px;height:36px;padding:8px;overflow:hidden}
+}
