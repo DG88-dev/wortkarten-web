@@ -1,0 +1,59 @@
+name: Test and deploy Wortkarten
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: firebase-production
+      cancel-in-progress: false
+    env:
+      FIREBASE_PROJECT: wortkarten-58af7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check deployment credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_WORTKARTEN_58AF7 }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::Add FIREBASE_SERVICE_ACCOUNT_WORTKARTEN_58AF7 in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          node -e 'const c=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); if(c.type!=="service_account" || c.project_id!==process.env.FIREBASE_PROJECT) throw new Error("A wortkarten-58af7 service-account JSON is required");'
+      - name: Authenticate to Firebase
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: wortkarten-58af7
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_WORTKARTEN_58AF7 }}
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@14.22.0
+      - name: Deploy Firestore rules and Hosting
+        run: firebase deploy --project "$FIREBASE_PROJECT" --only firestore:rules,hosting --non-interactive
+      - name: Deployment summary
+        run: echo 'Published to https://wortkarten-58af7.web.app' >> "$GITHUB_STEP_SUMMARY"
