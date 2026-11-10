@@ -4,10 +4,13 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import * as C from '../public/core.js';
 
-function app() {
+function app(legacy=false) {
   const elements=new Map(),listeners={};
   const element=()=>({hidden:false,style:{},classList:{toggle(){}},append(){},replaceChildren(){},setAttribute(){},removeAttribute(){},focus(){},blur(){}});
-  const get=id=>{if(!elements.has(id))elements.set(id,element());return elements.get(id);};
+  const html=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+  for(const [,id] of html.matchAll(/\bid="([^"]+)"/g))if(!legacy||id!=='repeat')elements.set(id,element());
+  const get=id=>elements.get(id)??null;
+  get('restart').after=el=>elements.set(el.id,el);
   const context=vm.createContext({C,localStorage:{getItem:()=>null,setItem(){}},
     document:{getElementById:get,createElement:element,querySelectorAll:()=>[],activeElement:element(),addEventListener:(name,fn)=>listeners[name]=fn},
     window:{addEventListener(){}},matchMedia:()=>({matches:false,addEventListener(){}})});
@@ -50,4 +53,13 @@ for(const mode of ['normal','article']) {
 test('Escape returns from completion to settings; Space still flips during practice',()=>{
   const a=app();a.run('start();');assert.equal(a.key(' '),true);assert.equal(a.run('flipped'),true);
   a.run('finish();');assert.equal(a.key('Escape'),true);assert.equal(a.run('practicing'),false);assert.equal(a.get('setup').hidden,false);
+});
+test('Cached HTML without the repeat button initializes and supports repeating',()=>{
+  const a=app(true);
+  assert.equal(a.get('repeat').textContent,'Újra');
+  a.run('start();finish();');
+  const before=a.run('deck.map(w=>w.id).sort().join()');
+  a.get('repeat').onclick();
+  assert.equal(a.run('finished'),false);
+  assert.equal(a.run('deck.map(w=>w.id).sort().join()'),before);
 });

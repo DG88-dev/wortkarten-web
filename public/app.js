@@ -91,6 +91,14 @@ function previous(){if(index>0){index--;flipped=false;renderCard();}}
 function next(){if(index+1>=deck.length)finish();else{index++;flipped=false;renderCard();}}
 function shuffleAgain(){deck=C.reshuffle(deck);index=0;flipped=false;finished=false;feedback='';showScreen();renderCard();document.activeElement?.blur();}
 function answer(value){if(!practicing||finished||mode!=='article')return;const result=C.answerArticle(deck,index,value);index=result.index;feedback=result.feedback;if(result.finished)finish();else renderCard();}
+// A cached pre-update HTML document can load the newest JavaScript.
+// Upgrade its completion controls before binding the new button.
+if(!$('repeat')){
+  const repeat=E('button','quiet','Újra');repeat.id='repeat';
+  repeat.setAttribute('aria-keyshortcuts','Space');
+  repeat.title='Space – a gyakorolt szavak újrakeverése';
+  $('restart').after(repeat);
+}
 $('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=previous;$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>start(mode);$('repeat').onclick=shuffleAgain;
 
 // Three equal vertical tap zones, including the card's empty space.
