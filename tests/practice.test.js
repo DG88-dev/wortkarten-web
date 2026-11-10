@@ -8,9 +8,9 @@ function app(legacy=false) {
   const elements=new Map(),listeners={};
   const element=()=>({hidden:false,style:{},classList:{toggle(){}},append(){},replaceChildren(){},setAttribute(){},removeAttribute(){},focus(){},blur(){}});
   const html=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
-  for(const [,id] of html.matchAll(/\bid="([^"]+)"/g))if(!legacy||id!=='repeat')elements.set(id,element());
+  for(const [,id] of html.matchAll(/\bid="([^"]+)"/g))if(!legacy||id!=='repeat')elements.set(id,{...element(),id});
   const get=id=>elements.get(id)??null;
-  get('restart').after=el=>elements.set(el.id,el);
+  get('restart').before=get('restart').after=el=>elements.set(el.id,el);
   const context=vm.createContext({C,localStorage:{getItem:()=>null,setItem(){}},
     document:{getElementById:get,createElement:element,querySelectorAll:()=>[],activeElement:element(),addEventListener:(name,fn)=>listeners[name]=fn},
     window:{addEventListener(){}},matchMedia:()=>({matches:false,addEventListener(){}})});

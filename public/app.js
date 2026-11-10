@@ -99,6 +99,10 @@ if(!$('repeat')){
   repeat.title='Space – a gyakorolt szavak újrakeverése';
   $('restart').after(repeat);
 }
+// Keep cached completion screens consistent with the current layout.
+$('restart').className='quiet';
+$('restart').before($('repeat'));
+$('restart').after($('finish-back'));
 $('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=previous;$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>start(mode);$('repeat').onclick=shuffleAgain;
 
 // Three equal vertical tap zones, including the card's empty space.
