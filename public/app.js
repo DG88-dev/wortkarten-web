@@ -89,9 +89,9 @@ function flip(){if(!practicing||finished||mode==='article')return;flipped=!flipp
 function finish(){finished=true;showScreen();$('finish-detail').textContent=deck.length+' szó';$('restart').focus();}
 function previous(){if(index>0){index--;flipped=false;renderCard();}}
 function next(){if(index+1>=deck.length)finish();else{index++;flipped=false;renderCard();}}
-function shuffleAgain(){deck=C.reshuffle(deck);index=0;finished=false;feedback='';showScreen();renderCard();}
+function shuffleAgain(){deck=C.reshuffle(deck);index=0;flipped=false;finished=false;feedback='';showScreen();renderCard();document.activeElement?.blur();}
 function answer(value){if(!practicing||finished||mode!=='article')return;const result=C.answerArticle(deck,index,value);index=result.index;feedback=result.feedback;if(result.finished)finish();else renderCard();}
-$('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=previous;$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>mode==='article'?shuffleAgain():start();
+$('start').onclick=()=>start();$('start-article').onclick=()=>start('article');$('back').onclick=back;$('finish-back').onclick=back;$('flip').onclick=flip;$('next').onclick=next;$('previous').onclick=previous;$('shuffle').onclick=shuffleAgain;$('restart').onclick=()=>start(mode);$('repeat').onclick=shuffleAgain;
 
 // Three equal vertical tap zones, including the card's empty space.
 // Interactive controls and text selection keep their own behavior.
@@ -120,7 +120,11 @@ document.addEventListener('keydown',e=>{
   if(e.target.matches('input,textarea,select')||e.target.isContentEditable||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
   if(!practicing)return;const key=e.key.toLowerCase();
   if(key==='escape'){e.preventDefault();back();return;}
-  if(finished){if(key==='enter'){e.preventDefault();mode==='article'?shuffleAgain():start();}return;}
+  if(finished){
+    if(key==='enter'){e.preventDefault();start(mode);}
+    else if(key===' '){e.preventDefault();shuffleAgain();}
+    return;
+  }
   if(key==='c'||key==='n'){e.preventDefault();const field=key==='c'?'favorite':'hidden',w=deck[index];store.set(w.id,{[field]:!C.flags(w,marks)[field]});}
   else if(mode==='article'&&['1','2','3'].includes(key)){e.preventDefault();answer(['der','die','das'][Number(key)-1]);}
   else if(mode==='normal'){if(key===' '){e.preventDefault();flip();}if(key==='arrowright'){e.preventDefault();next();}if(key==='arrowleft'&&index>0){e.preventDefault();index--;flipped=false;renderCard();}}
